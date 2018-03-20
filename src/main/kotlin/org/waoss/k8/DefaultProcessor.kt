@@ -50,7 +50,21 @@ class DefaultProcessor : Processor {
     )
     override val instructionExecutions: Map<String, () -> Unit> = mapOf()
 
+    /**
+     * The run() function starts iterating over the memory and starts executing them.
+     */
     override fun run() {
-
+        memory.forEach { byte ->
+            var nibbles = Integer.toHexString(byte.toInt())
+            if (nibbles.length == 3) {
+                nibbles = "0" + nibbles
+            }
+            val toExecute = instructionExecutions[nibbles]
+            if (toExecute == null) {
+                throw Exception()
+            } else {
+                toExecute()
+            }
+        }
     }
 }
