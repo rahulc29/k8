@@ -1,5 +1,7 @@
 package org.waoss.k8.cpu
 
-interface Context {
+import org.waoss.k8.gpu.GraphicsContext
 
+interface Context {
+    val graphicsContext: GraphicsContext
 }

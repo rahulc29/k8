@@ -2,10 +2,10 @@ package org.waoss.k8.cpu
 
 interface Instruction {
     val name: String
-    val args: ShortArray?
+    val args: ShortArray
 }
 
-internal data class InstructionImpl(override val name: String, override val args: ShortArray?) : Instruction {
+internal data class InstructionImpl(override val name: String, override val args: ShortArray) : Instruction {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -13,16 +13,13 @@ internal data class InstructionImpl(override val name: String, override val args
         other as InstructionImpl
 
         if (name != other.name) return false
-        if (args != null) {
-            if (other.args == null) return false
-            if (!args.contentEquals(other.args)) return false
-        } else if (other.args != null) return false
+        if (!args.contentEquals(other.args)) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + (args?.contentHashCode() ?: 0)
+        result = 31 * result + args.contentHashCode()
         return result
     }
 
