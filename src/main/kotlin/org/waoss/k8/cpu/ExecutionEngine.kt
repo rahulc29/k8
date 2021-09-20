@@ -143,15 +143,24 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
                 }
             }
         },
-        "8XY6" to {
+        "8XY6" to { // V[x] >>>= 1, V[y] is ignored
             withContext {
                 val xValue = generalPurposeRegisterBank[it.args[0].toInt()]
                 generalPurposeRegisterBank[0xf] = xValue.leastSignificantBit
-                updateXWithOperated(it) { x, _ -> (x.toInt() ushr 1).toByte()}
+                updateXWithOperated(it) { x, _ -> (x.toInt() ushr 1).toByte() }
             }
         },
-        "8XY7" to {
-
+        "8XY7" to { // SUBN XY, V[x] = V[y] - V[x], if V[y] > V[x], V[F] = 1
+            withContext {
+                updateXWithOperated(it) { x, y -> (y - x).toByte() }
+                val x = generalPurposeRegisterBank[it.args[0].toInt()].toInt()
+                val y = generalPurposeRegisterBank[it.args[1].toInt()].toInt()
+                if (y > x) {
+                    generalPurposeRegisterBank[0xf] = 1
+                } else {
+                    generalPurposeRegisterBank[0xf] = 0
+                }
+            }
         }
     )
 }
