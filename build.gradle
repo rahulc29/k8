@@ -24,6 +24,7 @@ test {
 
 dependencies {
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.5.30'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.5.30'
 }
 

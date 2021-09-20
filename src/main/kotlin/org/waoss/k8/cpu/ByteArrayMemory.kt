@@ -1,6 +1,6 @@
 package org.waoss.k8.cpu
 
-class ByteArrayMemory(override val size: Int = 0, private val array: ByteArray = ByteArray(size)) : Memory {
+class ByteArrayMemory(override val size: Int = 0, private val array: ByteArray = ByteArray(size)) : Memory<Byte> {
 
     override operator fun get(index: Int): Byte = array[index]
 

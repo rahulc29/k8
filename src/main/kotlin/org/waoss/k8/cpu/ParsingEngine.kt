@@ -1,6 +1,8 @@
 package org.waoss.k8.cpu
 
-interface ParsingEngine {
+import org.waoss.k8.Loggable
+
+interface ParsingEngine : Loggable {
     fun parse(bytes: Pair<Byte, Byte>): Instruction
     fun parse(bytes: ByteArray, digest: (Instruction) -> Unit)
 }
@@ -53,6 +55,12 @@ operator fun Short.get(index: Int): Byte {
         else -> this.leastSignificantNibble
     }
 }
+
+infix fun Byte.and(that: Byte) : Byte = (this.toInt() and that.toInt()).toByte()
+
+infix fun Byte.or(that: Byte) : Byte = (this.toInt() or that.toInt()).toByte()
+
+infix fun Byte.xor(that: Byte) : Byte = (this.toInt() xor that.toInt()).toByte()
 
 internal object ParsingEngineImpl : ParsingEngine {
 

@@ -1,6 +1,8 @@
 package org.waoss.k8.cpu
 
-interface Instruction {
+import org.waoss.k8.Loggable
+
+interface Instruction : Loggable {
     val name: String
     val args: ShortArray
 }

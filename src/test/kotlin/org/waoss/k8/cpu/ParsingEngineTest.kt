@@ -14,5 +14,9 @@ class ParsingEngineTest {
             actual = parsed
         )
         assertEquals(expected = 14, actual = parsed.args[0])
+        assertEquals(
+            expected = constructInstruction("1NNN", 0x0eee),
+            actual = parser.parse(Pair(0x1e.toByte(), 0xee.toByte()))
+        )
     }
 }

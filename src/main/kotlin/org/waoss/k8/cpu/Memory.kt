@@ -1,13 +1,15 @@
 package org.waoss.k8.cpu
 
-interface Memory {
+import org.waoss.k8.Loggable
+
+interface Memory<T : Number> : Loggable {
     val size: Int
-    operator fun get(index: Int): Byte
-    operator fun set(index: Int, value: Byte)
-    fun forEach(digest: (Byte) -> Unit)
+    operator fun get(index: Int): T
+    operator fun set(index: Int, value: T)
+    fun forEach(digest: (T) -> Unit)
 }
 
-fun IOEngine.constructMemory(): Memory {
+fun IOEngine.constructMemory(): Memory<Byte> {
     val read = this.readAll()
     return ByteArrayMemory(size = read.size, array = read)
 }
