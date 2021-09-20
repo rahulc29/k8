@@ -13,6 +13,9 @@ val Pair<Byte, Byte>.mostSignificant
 val Pair<Byte, Byte>.leastSignificant
     get() = this.second
 
+val Byte.leastSignificantBit: Byte
+    get() = this and 1.toByte()
+
 // 0x00
 val Short.x: Byte
     get() = ((this.toInt() and 0x0f00) ushr 8).toByte()

@@ -22,7 +22,7 @@
 hs_err_pid*
 
 # Build outputs and build tool stubs
-build/
-.idea/
-gradle/
-.gradle/
+/build/
+/.idea/
+/gradle/
+/.gradle/
