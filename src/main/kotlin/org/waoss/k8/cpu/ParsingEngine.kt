@@ -13,8 +13,20 @@ val Pair<Byte, Byte>.mostSignificant
 val Pair<Byte, Byte>.leastSignificant
     get() = this.second
 
+val UByte.hundreds: UByte
+    get() = (this / 100.toUByte()).toUByte()
+
+val UByte.tens: UByte
+    get() = (this / 10.toUByte()).mod(10.toUByte())
+
+val UByte.ones: UByte
+    get() = (this.mod(10.toUByte()))
+
 val Byte.leastSignificantBit: Byte
     get() = this and 1.toByte()
+
+val Byte.mostSignificantBit: Byte
+    get() = if ((this and 0x80.toByte()) == 0x80.toByte()) 1 else 0
 
 // 0x00
 val Short.x: Byte
@@ -59,11 +71,11 @@ operator fun Short.get(index: Int): Byte {
     }
 }
 
-infix fun Byte.and(that: Byte) : Byte = (this.toInt() and that.toInt()).toByte()
+infix fun Byte.and(that: Byte): Byte = (this.toInt() and that.toInt()).toByte()
 
-infix fun Byte.or(that: Byte) : Byte = (this.toInt() or that.toInt()).toByte()
+infix fun Byte.or(that: Byte): Byte = (this.toInt() or that.toInt()).toByte()
 
-infix fun Byte.xor(that: Byte) : Byte = (this.toInt() xor that.toInt()).toByte()
+infix fun Byte.xor(that: Byte): Byte = (this.toInt() xor that.toInt()).toByte()
 
 internal object ParsingEngineImpl : ParsingEngine {
 
@@ -151,7 +163,7 @@ internal object ParsingEngineImpl : ParsingEngine {
             } else if (this[0] == 0xe.toByte() && this[2] == 0xa.toByte() && this[3] == 1.toByte()) {
                 return constructInstruction("EXA1", x.toShort())
             } else if (this[0] == 0xf.toByte()) {
-                return when(this.mostSignificantByte) {
+                return when (this.mostSignificantByte) {
                     0x07.toByte() -> constructInstruction("FX07", x.toShort())
                     0x0a.toByte() -> constructInstruction("FX0A", x.toShort())
                     0x15.toByte() -> constructInstruction("FX15", x.toShort())

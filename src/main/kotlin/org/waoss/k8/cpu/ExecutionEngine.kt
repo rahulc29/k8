@@ -21,6 +21,12 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         generalPurposeRegisterBank[x] = operation(generalPurposeRegisterBank[x], generalPurposeRegisterBank[y])
     }
 
+    private fun Context.skipNext() {
+        stackPointerRegisterBank.apply {
+            value = (value + 2).toByte()
+        }
+    }
+
     override fun execute(instruction: Instruction) {
         // executes iff the lambda exists and is non-null
         if (digestMap[instruction.name] != null) {
@@ -55,9 +61,7 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
                 val x = it.args[0]
                 val kk = it.args[1]
                 if (generalPurposeRegisterBank[x.toInt()] == kk.toByte()) {
-                    stackPointerRegisterBank.apply {
-                        value = (value + 2).toByte()
-                    }
+                    skipNext()
                 }
             }
         },
@@ -66,9 +70,7 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
                 val x = it.args[0]
                 val kk = it.args[1]
                 if (generalPurposeRegisterBank[x.toInt()] != kk.toByte()) {
-                    stackPointerRegisterBank.apply {
-                        value = (value + 2).toByte()
-                    }
+                    skipNext()
                 }
             }
         },
@@ -77,9 +79,7 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
                 val x = it.args[0]
                 val y = it.args[1]
                 if (generalPurposeRegisterBank[x.toInt()] == generalPurposeRegisterBank[y.toInt()]) {
-                    stackPointerRegisterBank.apply {
-                        value = (value + 2).toByte()
-                    }
+                    skipNext()
                 }
             }
         },
@@ -161,6 +161,116 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
                     generalPurposeRegisterBank[0xf] = 0
                 }
             }
+        },
+        "8XYE" to { // V[x] <<= 1, set V[F] as most significant bit of V[x] before left-shift
+            withContext {
+                val xValue = generalPurposeRegisterBank[it.args[0].toInt()]
+                if (xValue.mostSignificantBit == 1.toByte()) {
+                    generalPurposeRegisterBank[0xf] = 1
+                }
+                updateXWithOperated(it) { x, _ -> (x.toInt() shl 1).toByte() }
+            }
+        },
+        "9XY0" to { // SNE XY, skip next if V[x] != V[y]
+            withContext {
+                val x = it.args[0].toInt()
+                val y = it.args[1].toInt()
+                if (generalPurposeRegisterBank[x] != generalPurposeRegisterBank[y]) {
+                    skipNext()
+                }
+            }
+        },
+        "ANNN" to { // set IP as `NNN`
+            withContext {
+                instructionPointerRegisterBank.value = it.args[0]
+            }
+        },
+        "BNNN" to { // jump to location `NNN` + V[0]
+            withContext {
+                instructionPointerRegisterBank.apply {
+                    value = (it.args[0] + generalPurposeRegisterBank[0]).toShort()
+                }
+            }
+        },
+        "CXKK" to {
+            withContext {
+                val random = (0..255).random()
+                val x = it.args[0].toInt()
+                val kk = it.args[1].toInt()
+                generalPurposeRegisterBank[x] = (random and kk).toByte()
+            }
+        },
+        "FX07" to {
+            withContext {
+                val x = it.args[0].toInt()
+                generalPurposeRegisterBank[x] = delayTimerRegisterBank.value
+            }
+        },
+        "FX15" to {
+            withContext {
+                val x = it.args[0].toInt()
+                delayTimerRegisterBank.value = generalPurposeRegisterBank[x]
+            }
+        },
+        "FX18" to {
+            withContext {
+                val x = it.args[0].toInt()
+                soundTimerRegisterBank.value = generalPurposeRegisterBank[x]
+            }
+        },
+        "FX1E" to { // I += V[x]
+            withContext {
+                instructionPointerRegisterBank.apply {
+                    val x = it.args[0].toInt()
+                    val unsignedVx = generalPurposeRegisterBank[x].toUInt()
+                    val unsignedIp = this.value.toUInt()
+                    this.value = (unsignedIp + unsignedVx).toShort()
+                }
+            }
+        },
+        "FX29" to { // point IP to the hexadecimal sprite address of [x]
+            withContext {
+                val x = it.args[0].toInt()
+                instructionPointerRegisterBank.value = graphicsContext.hexadecimalSpriteAddress(x)
+            }
+        },
+        "FX33" to { // load V[x], convert to BCD, and store at [IP, IP + 1, IP + 2] as [H, T, O]
+            withContext {
+                val xValue = it.args[0].toUByte()
+                instructionPointerRegisterBank.value.toInt().apply {
+                    generalMemory[this] = xValue.hundreds.toByte()
+                    generalMemory[this + 1] = xValue.tens.toByte()
+                    generalMemory[this + 2] = xValue.ones.toByte()
+                }
+            }
+        },
+        "FX55" to { // store the registers into the memory at IP
+            withContext {
+                val x = it.args[0]
+                for (i in 0..x) {
+                    generalMemory[instructionPointerRegisterBank.value + i] = generalPurposeRegisterBank[i]
+                }
+            }
+        },
+        "FX65" to { // load the registers from memory at IP
+            withContext {
+                val x = it.args[0]
+                for (i in 0..x) {
+                    generalPurposeRegisterBank[i] = generalMemory[instructionPointerRegisterBank.value + i]
+                }
+            }
+        },
+        "DXYN" to {
+
+        },
+        "EX9E" to {
+
+        },
+        "EXA1" to {
+
+        },
+        "FX0A" to {
+
         }
     )
 }

@@ -8,6 +8,8 @@ interface Context : Loggable {
     val generalPurposeRegisterBank: GeneralPurposeRegisterBank
     val stackPointerRegisterBank: StackPointerRegisterBank
     val instructionPointerRegisterBank: InstructionPointerRegisterBank
+    val soundTimerRegisterBank: SoundTimerRegisterBank
+    val delayTimerRegisterBank: DelayTimerRegisterBank
     val generalMemory: Memory<Byte>
     val stackMemory: Memory<Short>
 }
