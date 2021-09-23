@@ -10,7 +10,7 @@ sealed interface RegisterBank<T : Number> : Loggable {
 
 sealed class ByteRegisterBank : RegisterBank<Byte>
 
-sealed class SingletonRegisterBank<T : Number>(var value: T) : RegisterBank<T> {
+sealed class SingletonRegisterBank<T : Number>(open var value: T) : RegisterBank<T> {
     override fun get(index: Int): T {
         if (index != 0) {
             throwIndexOutOfBounds(index)
@@ -37,7 +37,7 @@ class GeneralPurposeRegisterBank : ByteRegisterBank() {
     }
 
     override fun set(index: Int, value: Byte) {
-        logger.info("General purpose register V[$index] changed to ${value.toString(radix = 16)}")
+        logger.info("General purpose register V[$index] changed to ${value.toUByte().toString(radix = 16)}")
         array[index] = value
     }
 
@@ -52,6 +52,12 @@ class InstructionPointerRegisterBank(value: Short) : SingletonRegisterBank<Short
         logger.info("Instruction pointer changed to ${value.toString(radix = 16)}")
     }
 
+    override var value: Short = value
+        set(value) {
+            logger.info("Instruction pointer changed to ${value.toString(radix = 16)}")
+            field = value
+        }
+
     operator fun inc(): InstructionPointerRegisterBank {
         this.value = (value + 2).toShort()
         return this
@@ -59,6 +65,12 @@ class InstructionPointerRegisterBank(value: Short) : SingletonRegisterBank<Short
 }
 
 class StackPointerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
+    override var value: Byte = value
+        set(value) {
+            logger.info("Stack pointer changed to ${value.toString(radix = 16)}")
+            field = value
+        }
+
     override fun set(index: Int, value: Byte) {
         super.set(index, value)
         logger.info("Stack pointer changed to ${value.toString(radix = 16)}")
@@ -66,6 +78,12 @@ class StackPointerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value)
 }
 
 class DelayTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
+    override var value: Byte = value
+        set(value) {
+            logger.info("Delay timer changed to ${value.toString(radix = 16)}")
+            field = value
+        }
+
     override fun set(index: Int, value: Byte) {
         super.set(index, value)
         logger.info("Delay timer changed to ${value.toString(radix = 16)}")
@@ -73,6 +91,12 @@ class DelayTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
 }
 
 class SoundTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
+    override var value: Byte = value
+        set(value) {
+            logger.info("Sound timer changed to ${value.toString(radix = 16)}")
+            field = value
+        }
+
     override fun set(index: Int, value: Byte) {
         super.set(index, value)
         logger.info("Sound timer changed to ${value.toString(radix = 16)}")

@@ -1,6 +1,9 @@
 package org.waoss.k8.cpu
 
 import org.waoss.k8.Loggable
+import org.waoss.k8.gpu.positionOf
+import org.waoss.k8.input.byte
+import org.waoss.k8.input.key
 import org.waoss.k8.logger
 
 interface ExecutionEngine : Loggable {
@@ -22,14 +25,16 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
     }
 
     private fun Context.skipNext() {
-        stackPointerRegisterBank.apply {
-            value = (value + 2).toByte()
+        logger.info("Skipping next instruction")
+        instructionPointer.apply {
+            value = (value + 2).toShort()
         }
     }
 
     override fun execute(instruction: Instruction) {
         // executes iff the lambda exists and is non-null
         if (digestMap[instruction.name] != null) {
+            logger.info("Executing instruction $instruction")
             digestMap[instruction.name]?.let { it(instruction) }
         } else {
             logger.error("No digest exists for instruction ${instruction.name}")
@@ -40,20 +45,20 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         "00E0" to { context.graphicsContext.clearScreen() }, // cls
         "00EE" to { // ret from subroutine
             withContext {
-                instructionPointerRegisterBank.value = stackMemory[stackPointerRegisterBank.value.toInt()]
-                stackPointerRegisterBank.value = (stackPointerRegisterBank.value - 1).toByte()
+                instructionPointer.value = stackMemory[stackPointer.value.toInt()]
+                stackPointer.value = (stackPointer.value - 1).toByte()
             }
         },
         "1NNN" to { // jump to `NNN` address
             withContext {
-                instructionPointerRegisterBank.value = (it.args[0].toInt() and 0x0fff).toShort()
+                instructionPointer.value = (it.args[0].toInt() and 0x0fff).toShort()
             }
         },
         "2NNN" to { // call `NNN` address
             withContext {
-                stackPointerRegisterBank.value = (stackPointerRegisterBank.value + 1).toByte()
-                stackMemory[stackPointerRegisterBank.value.toInt()] = instructionPointerRegisterBank.value
-                instructionPointerRegisterBank.value = it.args[0]
+                stackPointer.value = (stackPointer.value + 1).toByte()
+                stackMemory[stackPointer.value.toInt()] = instructionPointer.value
+                instructionPointer.value = it.args[0]
             }
         },
         "3XKK" to { // SE Vx, skip next iff V[x] == kk
@@ -133,10 +138,10 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         },
         "8XY5" to { // SUB XY, V[x] = V[x] - V[y], if V[x] > V[y], V[F] = 1
             withContext {
+                val xValue = generalPurposeRegisterBank[it.args[0].toInt()].toInt()
+                val yValue = generalPurposeRegisterBank[it.args[1].toInt()].toInt()
                 updateXWithOperated(it) { x, y -> (x - y).toByte() }
-                val x = generalPurposeRegisterBank[it.args[0].toInt()].toInt()
-                val y = generalPurposeRegisterBank[it.args[1].toInt()].toInt()
-                if (x > y) {
+                if (xValue > yValue) {
                     generalPurposeRegisterBank[0xf] = 1
                 } else {
                     generalPurposeRegisterBank[0xf] = 0
@@ -152,10 +157,10 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         },
         "8XY7" to { // SUBN XY, V[x] = V[y] - V[x], if V[y] > V[x], V[F] = 1
             withContext {
+                val xValue = generalPurposeRegisterBank[it.args[0].toInt()].toInt()
+                val yValue = generalPurposeRegisterBank[it.args[1].toInt()].toInt()
                 updateXWithOperated(it) { x, y -> (y - x).toByte() }
-                val x = generalPurposeRegisterBank[it.args[0].toInt()].toInt()
-                val y = generalPurposeRegisterBank[it.args[1].toInt()].toInt()
-                if (y > x) {
+                if (yValue > xValue) {
                     generalPurposeRegisterBank[0xf] = 1
                 } else {
                     generalPurposeRegisterBank[0xf] = 0
@@ -182,12 +187,12 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         },
         "ANNN" to { // set IP as `NNN`
             withContext {
-                instructionPointerRegisterBank.value = it.args[0]
+                instructionPointer.value = it.args[0]
             }
         },
         "BNNN" to { // jump to location `NNN` + V[0]
             withContext {
-                instructionPointerRegisterBank.apply {
+                instructionPointer.apply {
                     value = (it.args[0] + generalPurposeRegisterBank[0]).toShort()
                 }
             }
@@ -203,24 +208,24 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         "FX07" to {
             withContext {
                 val x = it.args[0].toInt()
-                generalPurposeRegisterBank[x] = delayTimerRegisterBank.value
+                generalPurposeRegisterBank[x] = delayTimer.value
             }
         },
         "FX15" to {
             withContext {
                 val x = it.args[0].toInt()
-                delayTimerRegisterBank.value = generalPurposeRegisterBank[x]
+                delayTimer.value = generalPurposeRegisterBank[x]
             }
         },
         "FX18" to {
             withContext {
                 val x = it.args[0].toInt()
-                soundTimerRegisterBank.value = generalPurposeRegisterBank[x]
+                soundTimer.value = generalPurposeRegisterBank[x]
             }
         },
         "FX1E" to { // I += V[x]
             withContext {
-                instructionPointerRegisterBank.apply {
+                instructionPointer.apply {
                     val x = it.args[0].toInt()
                     val unsignedVx = generalPurposeRegisterBank[x].toUInt()
                     val unsignedIp = this.value.toUInt()
@@ -231,13 +236,13 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         "FX29" to { // point IP to the hexadecimal sprite address of [x]
             withContext {
                 val x = it.args[0].toInt()
-                instructionPointerRegisterBank.value = graphicsContext.hexadecimalSpriteAddress(x)
+                instructionPointer.value = graphicsContext.hexadecimalSpriteAddress(x)
             }
         },
         "FX33" to { // load V[x], convert to BCD, and store at [IP, IP + 1, IP + 2] as [H, T, O]
             withContext {
                 val xValue = it.args[0].toUByte()
-                instructionPointerRegisterBank.value.toInt().apply {
+                instructionPointer.value.toInt().apply {
                     generalMemory[this] = xValue.hundreds.toByte()
                     generalMemory[this + 1] = xValue.tens.toByte()
                     generalMemory[this + 2] = xValue.ones.toByte()
@@ -248,7 +253,7 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
             withContext {
                 val x = it.args[0]
                 for (i in 0..x) {
-                    generalMemory[instructionPointerRegisterBank.value + i] = generalPurposeRegisterBank[i]
+                    generalMemory[instructionPointer.value + i] = generalPurposeRegisterBank[i]
                 }
             }
         },
@@ -256,21 +261,45 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
             withContext {
                 val x = it.args[0]
                 for (i in 0..x) {
-                    generalPurposeRegisterBank[i] = generalMemory[instructionPointerRegisterBank.value + i]
+                    generalPurposeRegisterBank[i] = generalMemory[instructionPointer.value + i]
                 }
             }
         },
         "DXYN" to {
-
+            withContext {
+                val x = it.args[0].toInt()
+                val y = it.args[1].toInt()
+                val n = it.args[2].toInt()
+                for (i in 0 until n) {
+                    val read = generalMemory[instructionPointer.value + i]
+                    graphicsContext.draw(positionOf(x, y), read)
+                }
+            }
         },
         "EX9E" to {
-
+            withContext {
+                val x = it.args[0].toInt()
+                val key = (generalPurposeRegisterBank[x] and 0x0f).key
+                if (keyboard.isPressed(key)) {
+                    skipNext()
+                }
+            }
         },
         "EXA1" to {
-
+            withContext {
+                val x = it.args[0].toInt()
+                val key = (generalPurposeRegisterBank[x] and 0x0f).key
+                if (!keyboard.isPressed(key)) {
+                    skipNext()
+                }
+            }
         },
         "FX0A" to {
-
+            withContext {
+                val key = keyboard.nextKey()
+                val x = it.args[0].toInt()
+                generalPurposeRegisterBank[x] = key.byte
+            }
         }
     )
 }
