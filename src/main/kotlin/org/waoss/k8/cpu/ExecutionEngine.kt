@@ -7,7 +7,7 @@ import org.waoss.k8.input.key
 import org.waoss.k8.logger
 
 interface ExecutionEngine : Loggable {
-    fun execute(instruction: Instruction)
+    fun execute(instruction: Instruction): Boolean
     val digestMap: Map<String, (Instruction) -> Boolean>
     val context: Context
 }
@@ -31,26 +31,27 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
         }
     }
 
-    override fun execute(instruction: Instruction) {
+    override fun execute(instruction: Instruction): Boolean {
         // executes iff the lambda exists and is non-null
-        if (digestMap[instruction.name] != null) {
+        return if (digestMap[instruction.name] != null) {
             if (instruction != emptyInstruction()) {
                 logger.info("Executing instruction $instruction")
             } else {
                 logger.info("Encountered empty instruction, performing no-op")
             }
-            digestMap[instruction.name]?.let { it(instruction) }
+            digestMap[instruction.name]?.let { it(instruction) } ?: false
         } else {
             logger.error("No digest exists for instruction ${instruction.name}")
+            false
         }
     }
 
     override val digestMap: Map<String, (Instruction) -> Boolean> = mutableMapOf(
-        "00E0" to fun(it: Instruction): Boolean {
+        "00E0" to fun(_: Instruction): Boolean {
             withContext { graphicsContext.clearScreen() }
             return false
         }, // cls
-        "00EE" to fun(it: Instruction): Boolean { // ret from subroutine
+        "00EE" to fun(_: Instruction): Boolean { // ret from subroutine
             withContext {
                 instructionPointer.value = stackMemory[stackPointer.value.toInt()]
                 stackPointer.value = (stackPointer.value - 1).toByte()

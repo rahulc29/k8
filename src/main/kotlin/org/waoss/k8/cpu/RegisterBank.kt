@@ -2,12 +2,13 @@ package org.waoss.k8.cpu
 
 import org.waoss.k8.Loggable
 import org.waoss.k8.logger
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 sealed interface RegisterBank<T : Number> : Loggable {
     operator fun get(index: Int): T
     operator fun set(index: Int, value: T)
 }
-
 sealed class ByteRegisterBank : RegisterBank<Byte>
 
 sealed class SingletonRegisterBank<T : Number>(open var value: T) : RegisterBank<T> {

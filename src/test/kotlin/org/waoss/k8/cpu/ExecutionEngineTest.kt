@@ -57,6 +57,8 @@ internal class ExecutionEngineTest {
             constructInstruction("7XKK", 2, 0xe),
             constructInstruction("8XY0", 3, 2)
         )
-        instructionList.forEach(executionEngine::execute)
+        instructionList.forEach {
+            println(executionEngine.execute(it))
+        }
     }
 }
