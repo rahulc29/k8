@@ -10,7 +10,7 @@ interface Memory<T : Number> : Loggable {
     fun forEach(digest: (T) -> Unit)
 }
 
-fun IOEngine.constructMemory(): Memory<Byte> {
+suspend fun IOEngine.constructMemory(): Memory<Byte> {
     val read = this.readAll()
     return ByteArrayMemory(size = read.size, array = read)
 }

@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 rootProject.name = 'k8'
-include 'k8-javafx'
+include 'k8-jfx'

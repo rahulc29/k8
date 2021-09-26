@@ -1,0 +1,64 @@
+buildscript {
+    ext.kotlin_version = '1.5.30'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+plugins {
+    id 'application'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'org.openjfx.javafxplugin'
+}
+
+group 'org.waoss.k8.jfx'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.7.1'
+}
+
+sourceCompatibility = '16'
+targetCompatibility = '16'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainModule = 'org.waoss.k8.jfx'
+    mainClass = 'org.waoss.k8.jfx.MainApplication'
+}
+
+[compileKotlin, compileTestKotlin].forEach {
+    it.kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+
+javafx {
+    version = '16'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+mainClassName = "$moduleName/org.waoss.k"
+dependencies {
+    implementation('org.controlsfx:controlsfx:11.1.0')
+    implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
+    implementation project(':')
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+}
+
+test {
+    useJUnitPlatform()
+}
+task prepareKotlinBuildScriptModel {
+
+}
