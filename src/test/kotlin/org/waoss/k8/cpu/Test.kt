@@ -1,8 +1,8 @@
 package org.waoss.k8.cpu
 
-import kotlinx.coroutines.coroutineScope
+import org.junit.jupiter.api.Test
 import org.waoss.k8.io.IOEngine
-import kotlin.test.*
+import kotlin.test.assertEquals
 
 class EngineTest {
 
