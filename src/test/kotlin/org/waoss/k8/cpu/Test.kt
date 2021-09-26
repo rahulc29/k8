@@ -1,8 +1,8 @@
 package org.waoss.k8.cpu
 
+import kotlinx.coroutines.coroutineScope
 import org.waoss.k8.io.IOEngine
 import kotlin.test.*
-import kotlin.test.Test
 
 class EngineTest {
 
@@ -17,9 +17,6 @@ class EngineTest {
                 )
             }
         }
-        val memory = engine.constructMemory()
-        assertEquals(expected = 3, actual = memory.size)
-        assertEquals(expected = 0, actual = memory[0])
     }
 
     @Test
