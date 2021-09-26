@@ -26,7 +26,9 @@ internal class ExecutionEngineImpl(override val context: Context) : ExecutionEng
 
     private fun Context.skipNext() {
         logger.info("Skipping next instruction")
-        instructionPointer++
+        instructionPointer.apply {
+            value = (value + 2).toShort()
+        }
     }
 
     override fun execute(instruction: Instruction): Boolean {

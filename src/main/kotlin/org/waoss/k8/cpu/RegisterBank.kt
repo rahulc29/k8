@@ -11,12 +11,16 @@ sealed interface RegisterBank<T : Number> : Loggable {
 }
 
 fun <T : Number> T.toHexString(): String = this.toInt().toString(radix = 16)
+fun <T : Number> T.toUHexString(): String = this.toByte().toUByte().toString(radix = 16)
 
 fun Loggable.logSetterInvoked(name: String, value: String) {
     logger.info("Value of $name changed to $value")
 }
 
-fun <T : Number> singletonRegisterBankDelegate(name: String, initial: T): ReadWriteProperty<SingletonRegisterBank<T>, T> =
+fun <T : Number> singletonRegisterBankDelegate(
+    name: String,
+    initial: T
+): ReadWriteProperty<SingletonRegisterBank<T>, T> =
     object : ReadWriteProperty<SingletonRegisterBank<T>, T>, Loggable {
         var value: T = initial
         override fun getValue(thisRef: SingletonRegisterBank<T>, property: KProperty<*>): T {
@@ -59,7 +63,7 @@ class GeneralPurposeRegisterBank : ByteRegisterBank() {
     }
 
     override fun set(index: Int, value: Byte) {
-        logger.info("General purpose register V[$index] changed to ${value.toHexString()}")
+        logger.info("General purpose register V[$index] changed to ${value.toUHexString()}")
         array[index] = value
     }
 
