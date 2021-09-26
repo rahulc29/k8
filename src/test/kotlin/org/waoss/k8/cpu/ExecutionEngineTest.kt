@@ -59,7 +59,11 @@ internal class ExecutionEngineTest {
             constructInstruction("8XY1", 2, 1),
             constructInstruction("8XY2", 2, 1),
             constructInstruction("8XY3", 2, 1),
-            constructInstruction("8XY4", 2, 1)
+            constructInstruction("8XY4", 2, 1),
+            constructInstruction("8XY5", 2, 1),
+            constructInstruction("8XY6", 2, 1),
+            constructInstruction("8XY7", 2, 1),
+            constructInstruction("8XYE", 2 ,1)
         )
         instructionList.forEach { println(executionEngine.execute(it)) }
     }

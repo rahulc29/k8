@@ -9,7 +9,7 @@ class EngineTest {
     @Test
     fun initIOEngine() {
         val engine = object : IOEngine {
-            override fun readAll(): ByteArray {
+            override suspend fun readAll(): ByteArray {
                 return byteArrayOf(
                     0x00,
                     0xFF.toByte(),
