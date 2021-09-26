@@ -4,7 +4,7 @@ import org.waoss.k8.Loggable
 import org.waoss.k8.gpu.GraphicsContext
 import org.waoss.k8.input.Keyboard
 
-interface Context : Loggable {
+interface ProcessorContext : Loggable {
     val graphicsContext: GraphicsContext
     val generalPurposeRegisterBank: GeneralPurposeRegisterBank
     val stackPointer: StackPointerRegisterBank

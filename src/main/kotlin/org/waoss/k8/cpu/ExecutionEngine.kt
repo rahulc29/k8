@@ -9,22 +9,22 @@ import org.waoss.k8.logger
 interface ExecutionEngine : Loggable {
     fun execute(instruction: Instruction): Boolean
     val digestMap: Map<String, (Instruction) -> Boolean>
-    val context: Context
+    val processorContext: ProcessorContext
 }
 
-internal class ExecutionEngineImpl(override val context: Context) : ExecutionEngine {
+internal class ExecutionEngineImpl(override val processorContext: ProcessorContext) : ExecutionEngine {
 
-    private fun withContext(digest: Context.() -> Unit) {
-        context.digest()
+    private fun withContext(digest: ProcessorContext.() -> Unit) {
+        processorContext.digest()
     }
 
-    private fun Context.updateXWithOperated(instruction: Instruction, operation: (Byte, Byte) -> Byte) {
+    private fun ProcessorContext.updateXWithOperated(instruction: Instruction, operation: (Byte, Byte) -> Byte) {
         val x = instruction.args[0].toInt()
         val y = instruction.args[1].toInt()
         generalPurposeRegisterBank[x] = operation(generalPurposeRegisterBank[x], generalPurposeRegisterBank[y])
     }
 
-    private fun Context.skipNext() {
+    private fun ProcessorContext.skipNext() {
         logger.info("Skipping next instruction")
         instructionPointer.apply {
             value = (value + 2).toShort()

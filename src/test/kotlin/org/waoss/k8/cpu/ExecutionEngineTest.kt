@@ -1,18 +1,18 @@
 package org.waoss.k8.cpu
 
-import org.junit.jupiter.api.Test
 import org.waoss.k8.gpu.GraphicsContext
 import org.waoss.k8.gpu.Position
 import org.waoss.k8.input.Key
 import org.waoss.k8.input.Keyboard
 import org.waoss.k8.input.key
 import org.waoss.k8.logger
+import kotlin.test.Test
 
 internal class ExecutionEngineTest {
 
     @Test
     fun execute() {
-        val context = object : Context {
+        val processorContext = object : ProcessorContext {
             override val graphicsContext: GraphicsContext = object : GraphicsContext {
                 override fun clearScreen() {
                     logger.info("Screen has been cleared")
@@ -44,7 +44,7 @@ internal class ExecutionEngineTest {
                 }
             }
         }
-        val executionEngine = ExecutionEngineImpl(context)
+        val executionEngine = ExecutionEngineImpl(processorContext)
         val instructionList = listOf(
             constructInstruction("00E0"),
             constructInstruction("00EE"),
@@ -55,10 +55,12 @@ internal class ExecutionEngineTest {
             constructInstruction("5XY0", 1, 3),
             constructInstruction("6XKK", 2, 0xea),
             constructInstruction("7XKK", 2, 0xe),
-            constructInstruction("8XY0", 3, 2)
+            constructInstruction("8XY0", 3, 2),
+            constructInstruction("8XY1", 2, 1),
+            constructInstruction("8XY2", 2, 1),
+            constructInstruction("8XY3", 2, 1),
+            constructInstruction("8XY4", 2, 1)
         )
-        instructionList.forEach {
-            println(executionEngine.execute(it))
-        }
+        instructionList.forEach { println(executionEngine.execute(it)) }
     }
 }
