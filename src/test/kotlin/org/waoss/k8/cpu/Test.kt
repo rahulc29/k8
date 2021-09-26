@@ -1,5 +1,6 @@
 package org.waoss.k8.cpu
 
+import org.waoss.k8.io.IOEngine
 import kotlin.test.*
 import kotlin.test.Test
 

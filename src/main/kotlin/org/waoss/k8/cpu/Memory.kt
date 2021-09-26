@@ -1,6 +1,7 @@
 package org.waoss.k8.cpu
 
 import org.waoss.k8.Loggable
+import org.waoss.k8.io.IOEngine
 
 interface Memory<T : Number> : Loggable {
     val size: Int
