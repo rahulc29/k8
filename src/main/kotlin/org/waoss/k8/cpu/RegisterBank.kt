@@ -9,6 +9,27 @@ sealed interface RegisterBank<T : Number> : Loggable {
     operator fun get(index: Int): T
     operator fun set(index: Int, value: T)
 }
+
+fun <T : Number> T.toHexString(): String = this.toInt().toString(radix = 16)
+
+fun Loggable.logSetterInvoked(name: String, value: String) {
+    logger.info("Value of $name changed to $value")
+}
+
+fun <T : Number> singletonRegisterBankDelegate(name: String, initial: T): ReadWriteProperty<SingletonRegisterBank<T>, T> =
+    object : ReadWriteProperty<SingletonRegisterBank<T>, T>, Loggable {
+        var value: T = initial
+        override fun getValue(thisRef: SingletonRegisterBank<T>, property: KProperty<*>): T {
+            return value
+        }
+
+        override fun setValue(thisRef: SingletonRegisterBank<T>, property: KProperty<*>, value: T) {
+            logSetterInvoked(name, value.toHexString())
+            this.value = value
+        }
+
+    }
+
 sealed class ByteRegisterBank : RegisterBank<Byte>
 
 sealed class SingletonRegisterBank<T : Number>(open var value: T) : RegisterBank<T> {
@@ -26,7 +47,7 @@ sealed class SingletonRegisterBank<T : Number>(open var value: T) : RegisterBank
         this.value = value
     }
 
-    protected fun throwIndexOutOfBounds(index: Int): Nothing {
+    private fun throwIndexOutOfBounds(index: Int): Nothing {
         throw IndexOutOfBoundsException("Index $index cannot possibly exist for singleton register bank")
     }
 }
@@ -38,7 +59,7 @@ class GeneralPurposeRegisterBank : ByteRegisterBank() {
     }
 
     override fun set(index: Int, value: Byte) {
-        logger.info("General purpose register V[$index] changed to ${value.toUByte().toString(radix = 16)}")
+        logger.info("General purpose register V[$index] changed to ${value.toHexString()}")
         array[index] = value
     }
 
@@ -48,17 +69,7 @@ class GeneralPurposeRegisterBank : ByteRegisterBank() {
 }
 
 class InstructionPointerRegisterBank(value: Short) : SingletonRegisterBank<Short>(value) {
-    override fun set(index: Int, value: Short) {
-        super.set(index, value)
-        logger.info("Instruction pointer changed to ${value.toString(radix = 16)}")
-    }
-
-    override var value: Short = value
-        set(value) {
-            logger.info("Instruction pointer changed to ${value.toString(radix = 16)}")
-            field = value
-        }
-
+    override var value: Short by singletonRegisterBankDelegate("Instruction Pointer", value)
     operator fun inc(): InstructionPointerRegisterBank {
         this.value = (value + 2).toShort()
         return this
@@ -66,40 +77,13 @@ class InstructionPointerRegisterBank(value: Short) : SingletonRegisterBank<Short
 }
 
 class StackPointerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
-    override var value: Byte = value
-        set(value) {
-            logger.info("Stack pointer changed to ${value.toString(radix = 16)}")
-            field = value
-        }
-
-    override fun set(index: Int, value: Byte) {
-        super.set(index, value)
-        logger.info("Stack pointer changed to ${value.toString(radix = 16)}")
-    }
+    override var value: Byte by singletonRegisterBankDelegate("Stack Pointer", value)
 }
 
 class DelayTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
-    override var value: Byte = value
-        set(value) {
-            logger.info("Delay timer changed to ${value.toString(radix = 16)}")
-            field = value
-        }
-
-    override fun set(index: Int, value: Byte) {
-        super.set(index, value)
-        logger.info("Delay timer changed to ${value.toString(radix = 16)}")
-    }
+    override var value: Byte by singletonRegisterBankDelegate("Delay Timer", value)
 }
 
 class SoundTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
-    override var value: Byte = value
-        set(value) {
-            logger.info("Sound timer changed to ${value.toString(radix = 16)}")
-            field = value
-        }
-
-    override fun set(index: Int, value: Byte) {
-        super.set(index, value)
-        logger.info("Sound timer changed to ${value.toString(radix = 16)}")
-    }
+    override var value: Byte by singletonRegisterBankDelegate("Sound Timer", value)
 }
