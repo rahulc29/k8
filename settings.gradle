@@ -1,2 +1,8 @@
+pluginManagement {
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version('1.5.30')
+        id 'org.openjfx.javafxplugin' version '0.0.10'
+    }
+}
 rootProject.name = 'k8'
-include 'jfx'
+include 'k8-javafx'
