@@ -34,7 +34,7 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
     }
 
     override fun hexadecimalSpriteAddress(x: Int): Short {
-        TODO("Not yet implemented")
+        return (0x00 + x * 5).toShort()
     }
 
     override fun draw(position: Position, value: Byte) {

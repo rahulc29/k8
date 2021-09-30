@@ -12,6 +12,10 @@ interface ExecutionEngine : Loggable {
     val processorContext: ProcessorContext
 }
 
+operator fun Byte.get(index: Int): Boolean {
+    return ((this and (1 shl index).toByte()) == (1 shl index).toByte())
+}
+
 internal class ExecutionEngineImpl(override val processorContext: ProcessorContext) : ExecutionEngine {
 
     private fun withContext(digest: ProcessorContext.() -> Unit) {
@@ -309,9 +313,19 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
                 val n = it.args[2].toInt()
                 for (i in 0 until n) {
                     val read = generalMemory[instructionPointer.value + i]
-                    val previous = graphicsContext[x, y]
-
-                    graphicsContext.draw(positionOf(x, y), read)
+                    // TODO: Read more docs about the DXYN instruction
+                    for (j in 0 until 8) {
+                        val position = positionOf(x + j, y + i)
+                        val previous = graphicsContext[position]
+                        val new = previous xor read[7 - j]
+                        graphicsContext.apply {
+                            if (new) draw(position, 1)
+                            else draw(position, 0)
+                        }
+                        if (previous && !new) {
+                            generalPurposeRegisterBank[0xf] = 1
+                        }
+                    }
                 }
             }
             return false
