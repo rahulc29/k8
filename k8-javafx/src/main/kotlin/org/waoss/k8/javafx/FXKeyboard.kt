@@ -1,4 +1,4 @@
-package org.waoss.k8.cpu
+package org.waoss.k8.javafx
 
 import javafx.scene.Scene
 import org.waoss.k8.input.Key
