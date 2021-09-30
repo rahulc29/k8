@@ -37,9 +37,13 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
         TODO("Not yet implemented")
     }
 
-    override fun draw(position: Position<Int>, value: Byte) {
+    override fun draw(position: Position, value: Byte) {
         frameBuffer[position.x][position.y] = value == 1.toByte()
     }
+
+    override fun get(index1: Int, index2: Int): Boolean = frameBuffer[index1][index2]
+
+    override fun get(position: Position): Boolean = get(position.x, position.y)
 
     fun render() {
         graphicsContext.apply {

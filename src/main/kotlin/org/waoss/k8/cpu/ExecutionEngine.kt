@@ -309,6 +309,8 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
                 val n = it.args[2].toInt()
                 for (i in 0 until n) {
                     val read = generalMemory[instructionPointer.value + i]
+                    val previous = graphicsContext[x, y]
+
                     graphicsContext.draw(positionOf(x, y), read)
                 }
             }
