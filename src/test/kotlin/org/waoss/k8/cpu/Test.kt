@@ -1,22 +1,12 @@
 package org.waoss.k8.cpu
 
 import org.junit.jupiter.api.Test
-import org.waoss.k8.io.IOEngine
 import kotlin.test.assertEquals
 
 class EngineTest {
 
     @Test
     fun initIOEngine() {
-        val engine = object : IOEngine {
-            override suspend fun readAll(): ByteArray {
-                return byteArrayOf(
-                    0x00,
-                    0xFF.toByte(),
-                    0xaf.toByte()
-                )
-            }
-        }
     }
 
     @Test
