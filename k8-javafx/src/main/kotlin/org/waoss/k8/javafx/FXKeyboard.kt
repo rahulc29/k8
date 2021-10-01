@@ -7,6 +7,13 @@ import org.waoss.k8.logger
 
 class FXKeyboard(private val scene: Scene) : Keyboard {
     private var keyLastPressedName: String = ""
+    private val keyPressMap = mutableMapOf<String, Boolean>()
+    private val keyMap = mapOf(
+        "DIGIT1" to "NUM1",
+        "DIGIT2" to "NUM2",
+        "DIGIT3" to "NUM3",
+        "DIGIT4" to "C"
+    )
 
     init {
         scene.setOnKeyPressed {

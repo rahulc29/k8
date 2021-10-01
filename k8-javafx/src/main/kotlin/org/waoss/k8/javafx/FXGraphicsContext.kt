@@ -1,5 +1,6 @@
 package org.waoss.k8.javafx
 
+import javafx.application.Platform
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import org.waoss.k8.gpu.GraphicsContext
@@ -45,16 +46,18 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
 
     override fun get(position: Position): Boolean = get(position.x, position.y)
 
-    fun render() {
-        graphicsContext.apply {
-            frameBuffer.forEachIndexed { i, row ->
-                row.forEachIndexed { j, value ->
-                    fill = if (value) {
-                        Color.WHITE
-                    } else {
-                        Color.BLACK
+    override fun render() {
+        Platform.runLater {
+            graphicsContext.apply {
+                frameBuffer.forEachIndexed { i, row ->
+                    row.forEachIndexed { j, value ->
+                        fill = if (value) {
+                            Color.WHITE
+                        } else {
+                            Color.BLACK
+                        }
+                        fillRect(i.scaled, j.scaled, SCALE, SCALE)
                     }
-                    fillRect(i.scaled, j.scaled, SCALE, SCALE)
                 }
             }
         }

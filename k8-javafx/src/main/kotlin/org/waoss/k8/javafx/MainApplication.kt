@@ -4,14 +4,18 @@ import javafx.application.Application
 import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
+import javafx.stage.FileChooser
 import javafx.stage.Stage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.waoss.k8.ApplicationContext
 import org.waoss.k8.cpu.constructInstruction
 import org.waoss.k8.cpu.defaultProcessorContext
 import org.waoss.k8.cpu.lazyExecutionEngine
+import org.waoss.k8.cpu.parsingEngine
 import org.waoss.k8.gpu.positionOf
+import org.waoss.k8.io.FileIOEngine
 
 class MainApplication : Application() {
     override fun start(primaryStage: Stage?) {
@@ -26,15 +30,19 @@ class MainApplication : Application() {
             it.title = "K8 Emulator"
             it.scene = scene
             it.show()
-        }
-        val scope = CoroutineScope(Dispatchers.Default)
-        scope.launch {
-            val lazyEngine = processorContext.lazyExecutionEngine()
-            val engine = lazyEngine.value
-            engine.execute(constructInstruction("DXYN", 1, 2, 3))
-            canvas.draw(positionOf(20, 20), 1)
-            Platform.runLater {
-                canvas.render()
+            val fileChooser = FileChooser()
+            fileChooser.title = "Open ROM"
+            val file = fileChooser.showOpenDialog(it)
+            val context = ApplicationContext(
+                graphicsContext = canvas,
+                processorContext = processorContext,
+                executionEngine = processorContext.lazyExecutionEngine().value,
+                ioEngine = FileIOEngine(file),
+                parsingEngine = parsingEngine()
+            )
+            val scope = CoroutineScope(Dispatchers.Default)
+            scope.launch {
+                context.executionLoop()
             }
         }
     }

@@ -8,4 +8,5 @@ interface GraphicsContext : Loggable {
     fun draw(position: Position, value: Byte)
     operator fun get(index1: Int, index2: Int): Boolean
     operator fun get(position: Position): Boolean
+    fun render()
 }
