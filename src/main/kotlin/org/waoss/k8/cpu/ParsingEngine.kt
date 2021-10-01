@@ -181,7 +181,10 @@ internal object ParsingEngineImpl : ParsingEngine {
     }
 
     override fun parse(bytes: ByteArray, digest: (Instruction) -> Unit) {
-        TODO("Not yet implemented")
+        for (i in bytes.indices step 2) {
+            val instruction = this.parse(bytes[i] to bytes[i + 1])
+            digest(instruction)
+        }
     }
 
 }

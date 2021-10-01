@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.waoss.k8.Loggable
-import org.waoss.k8.io.AsyncIOEngine
+import org.waoss.k8.io.IOEngine
 
 interface Memory<T : Number> : Loggable {
     val size: Int
@@ -13,7 +13,7 @@ interface Memory<T : Number> : Loggable {
     fun forEach(digest: (T) -> Unit)
 }
 
-suspend fun AsyncIOEngine.constructMemory(): Deferred<Memory<Byte>> = coroutineScope {
+suspend fun IOEngine.constructMemory(): Deferred<Memory<Byte>> = coroutineScope {
     async {
         val array = readAllAsync().await() // blocking call but safe in async {}
         return@async ByteArrayMemory(array = array, size = array.size)

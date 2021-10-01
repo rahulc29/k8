@@ -2,6 +2,6 @@ package org.waoss.k8.io
 
 import kotlinx.coroutines.Deferred
 
-interface AsyncIOEngine {
+interface IOEngine {
     suspend fun readAllAsync(): Deferred<ByteArray>
 }

@@ -15,7 +15,7 @@ import org.waoss.k8.gpu.positionOf
 
 class MainApplication : Application() {
     override fun start(primaryStage: Stage?) {
-        val canvas = FXGraphicsContext(64, 32)
+        val canvas = FXGraphicsContext(width = 64, height = 32)
         val container = StackPane(canvas)
         val scene = Scene(container)
         val keyboard = FXKeyboard(scene)
