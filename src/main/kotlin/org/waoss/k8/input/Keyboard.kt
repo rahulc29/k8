@@ -1,8 +1,9 @@
 package org.waoss.k8.input
 
+import org.waoss.k8.Loggable
 import org.waoss.k8.input.Key.*
 
-interface Keyboard {
+interface Keyboard : Loggable {
     fun isPressed(key: Key): Boolean
     fun nextKey(): Key
 }

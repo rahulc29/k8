@@ -16,6 +16,10 @@ operator fun Byte.get(index: Int): Boolean {
     return ((this and (1 shl index).toByte()) == (1 shl index).toByte())
 }
 
+fun ProcessorContext.lazyExecutionEngine(): Lazy<ExecutionEngine> = lazy {
+    ExecutionEngineImpl(this@lazyExecutionEngine)
+}
+
 internal class ExecutionEngineImpl(override val processorContext: ProcessorContext) : ExecutionEngine {
 
     private fun withContext(digest: ProcessorContext.() -> Unit) {
