@@ -82,7 +82,7 @@ internal object ParsingEngineImpl : ParsingEngine {
     private fun Pair<Byte, Byte>.toShort(): Short =
         ((mostSignificant.toInt() shl 8) or (leastSignificant.toInt() and 0x00ff)).toShort()
 
-    private inline fun Short.xyInstruction(index: Int): Instruction {
+    private fun Short.xyInstruction(index: Int): Instruction {
         return constructInstruction(
             "8XY${index}",
             this.x.toShort(),

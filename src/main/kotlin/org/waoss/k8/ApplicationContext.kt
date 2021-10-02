@@ -19,7 +19,7 @@ open class ApplicationContext(
         val memory = ByteArrayMemory(deferredByteArray.await())
         val instructionPointer = processorContext.instructionPointer
         while (instructionPointer.value <= 4096) {
-            val bytes = memory[instructionPointer.value.toInt()] to memory[instructionPointer.value.toInt()]
+            val bytes = memory[instructionPointer.value.toInt()] to memory[instructionPointer.value.toInt() + 1]
             val instruction = parsingEngine.parse(bytes)
             if (!executionEngine.execute(instruction)) {
                 instructionPointer.inc()
