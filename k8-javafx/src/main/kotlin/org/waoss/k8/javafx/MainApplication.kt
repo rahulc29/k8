@@ -1,7 +1,6 @@
 package org.waoss.k8.javafx
 
 import javafx.application.Application
-import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.FileChooser
@@ -10,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.waoss.k8.ApplicationContext
-import org.waoss.k8.cpu.constructInstruction
 import org.waoss.k8.cpu.defaultProcessorContext
 import org.waoss.k8.cpu.lazyExecutionEngine
 import org.waoss.k8.cpu.parsingEngine

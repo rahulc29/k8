@@ -13,12 +13,12 @@ open class ApplicationContext(
     protected val executionEngine: ExecutionEngine,
     protected val ioEngine: IOEngine,
     protected val parsingEngine: ParsingEngine
-) {
+) : Loggable {
     suspend fun executionLoop() {
         val deferredByteArray = ioEngine.readAllAsync()
         val memory = ByteArrayMemory(deferredByteArray.await())
         val instructionPointer = processorContext.instructionPointer
-        while (instructionPointer.value <= 4096) {
+        while (instructionPointer.value < 4096) {
             val address = instructionPointer.value.toInt()
             val bytes = memory[address] to memory[address + 1]
             val instruction = parsingEngine.parse(bytes)

@@ -91,3 +91,7 @@ class DelayTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
 class SoundTimerRegisterBank(value: Byte) : SingletonRegisterBank<Byte>(value) {
     override var value: Byte by singletonRegisterBankDelegate("Sound Timer", value)
 }
+
+class IRegisterBank(value: Short) : SingletonRegisterBank<Short>(value) {
+    override var value: Short by singletonRegisterBankDelegate("I", value)
+}

@@ -219,11 +219,11 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
             }
             return false
         },
-        "ANNN" to fun(it: Instruction): Boolean { // set IP as `NNN`
+        "ANNN" to fun(it: Instruction): Boolean { // set I as `NNN`
             withContext {
-                instructionPointer.value = it.args[0]
+                iRegister.value = it.args[0]
             }
-            return true
+            return false
         },
         "BNNN" to fun(it: Instruction): Boolean { // jump to location `NNN` + V[0]
             withContext {
@@ -265,26 +265,26 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
         },
         "FX1E" to fun(it: Instruction): Boolean { // I += V[x]
             withContext {
-                instructionPointer.apply {
+                iRegister.apply {
                     val x = it.args[0].toInt()
                     val unsignedVx = generalPurposeRegisterBank[x].toUInt()
-                    val unsignedIp = this.value.toUInt()
-                    this.value = (unsignedIp + unsignedVx).toShort()
+                    val unsignedI = this.value.toUInt()
+                    this.value = (unsignedI + unsignedVx).toShort()
                 }
             }
-            return true
+            return false
         },
-        "FX29" to fun(it: Instruction): Boolean { // point IP to the hexadecimal sprite address of [x]
+        "FX29" to fun(it: Instruction): Boolean { // point I to the hexadecimal sprite address of [x]
             withContext {
                 val x = it.args[0].toInt()
-                instructionPointer.value = graphicsContext.hexadecimalSpriteAddress(x)
+                iRegister.value = graphicsContext.hexadecimalSpriteAddress(x)
             }
-            return true
+            return false
         },
-        "FX33" to fun(it: Instruction): Boolean { // load V[x], convert to BCD, and store at [IP, IP + 1, IP + 2] as [H, T, O]
+        "FX33" to fun(it: Instruction): Boolean { // load V[x], convert to BCD, and store at [I, I + 1, I + 2] as [H, T, O]
             withContext {
                 val xValue = it.args[0].toUByte()
-                instructionPointer.value.toInt().apply {
+                iRegister.value.toInt().apply {
                     generalMemory[this] = xValue.hundreds.toByte()
                     generalMemory[this + 1] = xValue.tens.toByte()
                     generalMemory[this + 2] = xValue.ones.toByte()
@@ -292,20 +292,20 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
             }
             return false
         },
-        "FX55" to fun(it: Instruction): Boolean { // store the registers into the memory at IP
+        "FX55" to fun(it: Instruction): Boolean { // store the registers into the memory at I
             withContext {
                 val x = it.args[0]
                 for (i in 0..x) {
-                    generalMemory[instructionPointer.value + i] = generalPurposeRegisterBank[i]
+                    generalMemory[iRegister.value + i] = generalPurposeRegisterBank[i]
                 }
             }
             return false
         },
-        "FX65" to fun(it: Instruction): Boolean { // load the registers from memory at IP
+        "FX65" to fun(it: Instruction): Boolean { // load the registers from memory at I
             withContext {
                 val x = it.args[0]
                 for (i in 0..x) {
-                    generalPurposeRegisterBank[i] = generalMemory[instructionPointer.value + i]
+                    generalPurposeRegisterBank[i] = generalMemory[iRegister.value + i]
                 }
             }
             return false
@@ -316,7 +316,7 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
                 val y = it.args[1].toInt()
                 val n = it.args[2].toInt()
                 for (i in 0 until n) {
-                    val read = generalMemory[instructionPointer.value + i]
+                    val read = generalMemory[iRegister.value + i]
                     // TODO: Read more docs about the DXYN instruction
                     for (j in 0 until 8) {
                         val position = positionOf(x + j, y + i)

@@ -9,6 +9,7 @@ interface ProcessorContext : Loggable {
     val generalPurposeRegisterBank: GeneralPurposeRegisterBank
     val stackPointer: StackPointerRegisterBank
     val instructionPointer: InstructionPointerRegisterBank
+    val iRegister: IRegisterBank
     val soundTimer: SoundTimerRegisterBank
     val delayTimer: DelayTimerRegisterBank
     val generalMemory: Memory<Byte>
@@ -21,6 +22,7 @@ internal class ProcessorContextImpl(override val graphicsContext: GraphicsContex
     override val generalPurposeRegisterBank: GeneralPurposeRegisterBank = GeneralPurposeRegisterBank()
     override val stackPointer: StackPointerRegisterBank = StackPointerRegisterBank(0)
     override val instructionPointer: InstructionPointerRegisterBank = InstructionPointerRegisterBank(0x0200)
+    override val iRegister: IRegisterBank = IRegisterBank(0)
     override val soundTimer: SoundTimerRegisterBank = SoundTimerRegisterBank(0)
     override val delayTimer: DelayTimerRegisterBank = DelayTimerRegisterBank(0)
     override val generalMemory: Memory<Byte> = ByteArrayMemory(size = 4096)
