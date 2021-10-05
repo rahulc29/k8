@@ -1,5 +1,7 @@
 package org.waoss.k8
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import org.waoss.k8.cpu.ByteArrayMemory
 import org.waoss.k8.cpu.ExecutionEngine
 import org.waoss.k8.cpu.ParsingEngine
@@ -14,11 +16,11 @@ open class ApplicationContext(
     protected val ioEngine: IOEngine,
     protected val parsingEngine: ParsingEngine
 ) : Loggable {
-    suspend fun executionLoop() {
+    suspend fun executionLoop(coroutineScope: CoroutineScope) {
         val deferredByteArray = ioEngine.readAllAsync()
         val memory = ByteArrayMemory(deferredByteArray.await())
         val instructionPointer = processorContext.instructionPointer
-        while (instructionPointer.value < 4096) {
+        while (instructionPointer.value < 4096 && coroutineScope.isActive) {
             val address = instructionPointer.value.toInt()
             val bytes = memory[address] to memory[address + 1]
             val instruction = parsingEngine.parse(bytes)

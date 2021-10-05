@@ -5,6 +5,7 @@ import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import org.waoss.k8.gpu.GraphicsContext
 import org.waoss.k8.gpu.Position
+import org.waoss.k8.logger
 
 typealias PlatformGraphicsContext = javafx.scene.canvas.GraphicsContext
 
@@ -44,7 +45,9 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
     }
 
     override fun draw(x: Int, y: Int) {
+        logger.info("At ($x, $y), frame buffer was ${frameBuffer[x][y]}")
         frameBuffer[x][y] = frameBuffer[x][y] xor true
+        logger.info("At ($x, $y), frame buffer is  ${frameBuffer[x][y]}")
         render()
     }
 
@@ -54,6 +57,7 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
 
     override fun render() {
         Platform.runLater {
+            logger.info("Rendering the screen")
             graphicsContext.apply {
                 frameBuffer.forEachIndexed { i, row ->
                     row.forEachIndexed { j, value ->

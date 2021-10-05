@@ -15,6 +15,7 @@ import org.waoss.k8.cpu.lazyExecutionEngine
 import org.waoss.k8.cpu.parsingEngine
 import org.waoss.k8.gpu.positionOf
 import org.waoss.k8.io.FileIOEngine
+import kotlin.system.exitProcess
 
 class MainApplication : Application() {
     override fun start(primaryStage: Stage?) {
@@ -40,10 +41,13 @@ class MainApplication : Application() {
                 parsingEngine = parsingEngine()
             )
             val scope = CoroutineScope(Dispatchers.Default)
-            val handler = scope.launch {
-                context.executionLoop()
+            val job = scope.launch {
+                context.executionLoop(this)
             }
-            it.onCloseRequest = EventHandler { handler.cancel() }
+            it.onCloseRequest = EventHandler {
+                job.cancel()
+                exitProcess(0)
+            }
         }
     }
 }

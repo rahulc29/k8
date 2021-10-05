@@ -326,6 +326,7 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
                                 if (graphicsContext[xCoordinate, yCoordinate]) {
                                     generalPurposeRegisterBank[0xf] = 1
                                 }
+                                logger.info("About to draw ($xCoordinate, $yCoordinate)")
                                 graphicsContext.draw(xCoordinate, yCoordinate)
                             }
                         }
