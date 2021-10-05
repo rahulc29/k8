@@ -13,9 +13,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '0.9.26'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     implementation project(":")
 }

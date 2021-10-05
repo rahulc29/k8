@@ -312,8 +312,8 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
         },
         "DXYN" to fun(it: Instruction): Boolean {
             withContext {
-                val x = it.args[0].toInt()
-                val y = it.args[1].toInt()
+                val x = generalPurposeRegisterBank[it.args[0].toInt()]
+                val y = generalPurposeRegisterBank[it.args[1].toInt()]
                 val n = it.args[2].toInt()
                 for (i in 0 until n) {
                     val read = generalMemory[iRegister.value + i]
