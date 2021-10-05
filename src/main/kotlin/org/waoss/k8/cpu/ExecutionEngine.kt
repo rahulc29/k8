@@ -319,15 +319,15 @@ internal class ExecutionEngineImpl(override val processorContext: ProcessorConte
                     val read = generalMemory[iRegister.value + i]
                     // TODO: Read more docs about the DXYN instruction
                     for (j in 0 until 8) {
-                        val position = positionOf(x + j, y + i)
-                        val previous = graphicsContext[position]
-                        val new = previous xor read[7 - j]
-                        graphicsContext.apply {
-                            if (new) draw(position, 1)
-                            else draw(position, 0)
-                        }
-                        if (previous && !new) {
-                            generalPurposeRegisterBank[0xf] = 1
+                        if ((read and (0x80.toByte() shr j.toByte())).toInt() != 0) {
+                            val xCoordinate = x + j
+                            val yCoordinate = y + i
+                            if (xCoordinate < 64 && yCoordinate < 32) {
+                                if (graphicsContext[xCoordinate, yCoordinate]) {
+                                    generalPurposeRegisterBank[0xf] = 1
+                                }
+                                graphicsContext.draw(xCoordinate, yCoordinate)
+                            }
                         }
                     }
                 }

@@ -16,7 +16,7 @@ inline val Int.scaled: Double
 class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.scaled), GraphicsContext {
 
     private val graphicsContext: PlatformGraphicsContext = graphicsContext2D
-    private val frameBuffer = Array(height) { BooleanArray(width) }
+    private val frameBuffer = Array(width) { BooleanArray(height) }
 
     init {
         isFocusTraversable = true
@@ -40,6 +40,12 @@ class FXGraphicsContext(width: Int, height: Int) : Canvas(width.scaled, height.s
 
     override fun draw(position: Position, value: Byte) {
         frameBuffer[position.x][position.y] = value == 1.toByte()
+        render()
+    }
+
+    override fun draw(x: Int, y: Int) {
+        frameBuffer[x][y] = frameBuffer[x][y] xor true
+        render()
     }
 
     override fun get(index1: Int, index2: Int): Boolean = frameBuffer[index1][index2]

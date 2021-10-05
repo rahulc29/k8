@@ -77,6 +77,8 @@ infix fun Byte.or(that: Byte): Byte = (this.toInt() or that.toInt()).toByte()
 
 infix fun Byte.xor(that: Byte): Byte = (this.toInt() xor that.toInt()).toByte()
 
+infix fun Byte.shr(that: Byte): Byte = (this.toInt() shr that.toInt()).toByte()
+
 internal object ParsingEngineImpl : ParsingEngine {
 
     private fun Pair<Byte, Byte>.toShort(): Short =

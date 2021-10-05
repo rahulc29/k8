@@ -25,7 +25,6 @@ open class ApplicationContext(
             if (!executionEngine.execute(instruction)) {
                 instructionPointer.inc()
             }
-            graphicsContext.render()
         }
     }
 }

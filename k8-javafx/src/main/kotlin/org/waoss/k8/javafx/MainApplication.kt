@@ -1,6 +1,7 @@
 package org.waoss.k8.javafx
 
 import javafx.application.Application
+import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.FileChooser
@@ -39,9 +40,10 @@ class MainApplication : Application() {
                 parsingEngine = parsingEngine()
             )
             val scope = CoroutineScope(Dispatchers.Default)
-            scope.launch {
+            val handler = scope.launch {
                 context.executionLoop()
             }
+            it.onCloseRequest = EventHandler { handler.cancel() }
         }
     }
 }

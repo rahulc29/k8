@@ -6,6 +6,7 @@ interface GraphicsContext : Loggable {
     fun clearScreen()
     fun hexadecimalSpriteAddress(x: Int): Short
     fun draw(position: Position, value: Byte)
+    fun draw(x: Int, y: Int)
     operator fun get(index1: Int, index2: Int): Boolean
     operator fun get(position: Position): Boolean
     fun render()
