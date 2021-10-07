@@ -18,7 +18,8 @@ open class ApplicationContext(
 ) : Loggable {
     suspend fun executionLoop(coroutineScope: CoroutineScope) {
         val deferredByteArray = ioEngine.readAllAsync()
-        val memory = ByteArrayMemory(deferredByteArray.await())
+        val memory = ByteArrayMemory(array = deferredByteArray.await())
+        processorContext.generalMemory = memory
         val instructionPointer = processorContext.instructionPointer
         while (instructionPointer.value < 4096 && coroutineScope.isActive) {
             val address = instructionPointer.value.toInt()

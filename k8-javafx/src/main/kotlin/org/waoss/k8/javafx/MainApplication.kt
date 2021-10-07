@@ -25,6 +25,7 @@ class MainApplication : Application() {
         val keyboard = FXKeyboard(scene)
         val processorContext = defaultProcessorContext(canvas, keyboard)
         canvas.draw(positionOf(69, 69), 1)
+        canvas.draw(5, 5)
         canvas.render()
         primaryStage?.let {
             it.title = "K8 Emulator"
