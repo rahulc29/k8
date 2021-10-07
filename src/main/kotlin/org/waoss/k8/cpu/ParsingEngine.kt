@@ -77,12 +77,14 @@ infix fun Byte.or(that: Byte): Byte = (this.toInt() or that.toInt()).toByte()
 
 infix fun Byte.xor(that: Byte): Byte = (this.toInt() xor that.toInt()).toByte()
 
+infix fun Byte.shr(that: Byte): Byte = (this.toInt() shr that.toInt()).toByte()
+
 internal object ParsingEngineImpl : ParsingEngine {
 
     private fun Pair<Byte, Byte>.toShort(): Short =
         ((mostSignificant.toInt() shl 8) or (leastSignificant.toInt() and 0x00ff)).toShort()
 
-    private inline fun Short.xyInstruction(index: Int): Instruction {
+    private fun Short.xyInstruction(index: Int): Instruction {
         return constructInstruction(
             "8XY${index}",
             this.x.toShort(),
@@ -181,7 +183,10 @@ internal object ParsingEngineImpl : ParsingEngine {
     }
 
     override fun parse(bytes: ByteArray, digest: (Instruction) -> Unit) {
-        TODO("Not yet implemented")
+        for (i in bytes.indices step 2) {
+            val instruction = this.parse(bytes[i] to bytes[i + 1])
+            digest(instruction)
+        }
     }
 
 }

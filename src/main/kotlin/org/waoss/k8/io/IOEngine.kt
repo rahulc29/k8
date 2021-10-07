@@ -1,7 +1,7 @@
 package org.waoss.k8.io
 
-import org.waoss.k8.Loggable
+import kotlinx.coroutines.Deferred
 
-interface IOEngine : Loggable {
-    suspend fun readAll() : ByteArray
+interface IOEngine {
+    suspend fun readAllAsync(): Deferred<ByteArray>
 }

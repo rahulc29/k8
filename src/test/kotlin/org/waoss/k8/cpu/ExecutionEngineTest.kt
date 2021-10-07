@@ -18,8 +18,16 @@ val processorContext = object : ProcessorContext {
             return 0x69
         }
 
-        override fun draw(position: Position<Int>, value: Byte) {
+        override fun draw(position: Position, value: Byte) {
             logger.info("Drawing $value at $position")
+        }
+
+        override fun get(index1: Int, index2: Int): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun get(position: Position): Boolean {
+            TODO("Not yet implemented")
         }
 
     }

@@ -1,0 +1,27 @@
+start:
+lbl_0x0200:
+             0x0200     LD I, lbl_0x021e
+             0x0202     RND V2, 0x01
+             0x0204     SE V2, 0x01
+             0x0206     LD I, lbl_0x021a
+             0x0208     DRW V0, V1, 0x04
+             0x020a     ADD V0, 0x04
+             0x020c     SE V0, 0x40
+             0x020e     JP lbl_0x0200
+             0x0210     LD V0, 0x00
+             0x0212     ADD V1, 0x04
+             0x0214     SE V1, 0x20
+             0x0216     JP lbl_0x0200
+lbl_0x0218:
+             0x0218     JP lbl_0x0218
+lbl_0x021a:
+             0x021a     DB 0x80    ; 1       
+             0x021b     DB 0x40    ;  1      
+             0x021c     DB 0x20    ;   1     
+             0x021d     DB 0x10    ;    1    
+lbl_0x021e:
+             0x021e     DB 0x20    ;   1     
+             0x021f     DB 0x40    ;  1      
+             0x0220     DB 0x80    ; 1       
+             0x0221     DB 0x10    ;    1    
+

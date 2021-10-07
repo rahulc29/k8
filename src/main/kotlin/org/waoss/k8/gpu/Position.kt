@@ -1,17 +1,10 @@
 package org.waoss.k8.gpu
 
-open class Position<T : Number>(open val x: T, open val y: T)
+abstract class Position(open val x: Int, open val y: Int)
 
-internal class AlgebraicPosition(x: Int, y: Int) : Position<Int>(x, y) {
-    override val x: Int = x
-        get() {
-            return field % 64
-        }
-    override val y: Int = y
-        get() {
-            return field % 32
-        }
-
+internal class AlgebraicPosition(x: Int, y: Int) : Position(x, y) {
+    override val x: Int = x % 64
+    override val y: Int = y % 32
     override fun toString(): String {
         return "(${this.x}, ${this.y})"
     }
@@ -35,4 +28,4 @@ internal class AlgebraicPosition(x: Int, y: Int) : Position<Int>(x, y) {
     }
 }
 
-fun positionOf(x: Int, y: Int): Position<Int> = AlgebraicPosition(x = x, y = y)
+fun positionOf(x: Int, y: Int): Position = AlgebraicPosition(x = x, y = y)
